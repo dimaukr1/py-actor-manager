@@ -7,22 +7,22 @@ class ActorManager:
     def __init__(self, db_name: str, table_name: str) -> None:
         self.db_name = db_name
         self.table_name = table_name
+        self.connection = sqlite3.connect(self.db_name)
+        self.cursor = self.connection.cursor()
 
     def create(self, first_name: str, last_name: str) -> None:
-        with sqlite3.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
+        with self.connection as conn:
+            self.cursor.execute(
                 f"INSERT INTO {self.table_name} "
                 "(first_name, last_name) VALUES (?, ?)",
                 (first_name, last_name),
             )
 
     def all(self) -> list[Actor]:
-        with sqlite3.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
+        with self.connection as conn:
+            self.cursor.execute(
                 f"SELECT id, first_name, last_name FROM {self.table_name}")
-            rows = cursor.fetchall()
+            rows = self.cursor.fetchall()
             return [
                 Actor(id=row[0],
                       first_name=row[1],
@@ -31,9 +31,8 @@ class ActorManager:
 
     def update(self, pk: any,
                new_first_name: str, new_last_name: str) -> None:
-        with sqlite3.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
+        with self.connection as conn:
+            self.cursor.execute(
                 f"UPDATE {self.table_name} "
                 "SET first_name = ?, last_name = ? "
                 "WHERE id = ?",
@@ -41,7 +40,6 @@ class ActorManager:
             )
 
     def delete(self, pk: any) -> None:
-        with sqlite3.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-            cursor.execute(f"DELETE FROM {self.table_name} "
+        with self.connection as conn:
+            self.cursor.execute(f"DELETE FROM {self.table_name} "
                            "WHERE id = ?", (pk,))
