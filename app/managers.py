@@ -11,7 +11,7 @@ class ActorManager:
         self.cursor = self.connection.cursor()
 
     def create(self, first_name: str, last_name: str) -> None:
-        with self.connection as conn:
+        with self.connection:
             self.cursor.execute(
                 f"INSERT INTO {self.table_name} "
                 "(first_name, last_name) VALUES (?, ?)",
@@ -19,7 +19,7 @@ class ActorManager:
             )
 
     def all(self) -> list[Actor]:
-        with self.connection as conn:
+        with self.connection:
             self.cursor.execute(
                 f"SELECT id, first_name, last_name FROM {self.table_name}")
             rows = self.cursor.fetchall()
@@ -31,7 +31,7 @@ class ActorManager:
 
     def update(self, pk: any,
                new_first_name: str, new_last_name: str) -> None:
-        with self.connection as conn:
+        with self.connection:
             self.cursor.execute(
                 f"UPDATE {self.table_name} "
                 "SET first_name = ?, last_name = ? "
@@ -40,6 +40,6 @@ class ActorManager:
             )
 
     def delete(self, pk: any) -> None:
-        with self.connection as conn:
+        with self.connection:
             self.cursor.execute(f"DELETE FROM {self.table_name} "
-                           "WHERE id = ?", (pk,))
+                                "WHERE id = ?", (pk,))
